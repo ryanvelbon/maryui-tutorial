@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Country;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -14,6 +15,7 @@ new class extends Component {
     use WithPagination;
 
     public string $search = '';
+    public int $country_id = 0;
 
     public bool $drawer = false;
 
@@ -64,6 +66,7 @@ new class extends Component {
             ->with(['country'])
             ->withAggregate('country', 'name')
             ->when($this->search, fn (Builder $q) => $q->where('name', 'LIKE', "%$this->search%"))
+            ->when($this->country_id, fn (Builder $q) => $q->where('country_id', $this->country_id))
             ->orderBy(...array_values($this->sortBy))
             ->paginate(10);
     }
@@ -71,6 +74,7 @@ new class extends Component {
     public function with(): array
     {
         return [
+            'countries' => Country::all(),
             'users' => $this->users(),
             'headers' => $this->headers()
         ];
@@ -99,7 +103,11 @@ new class extends Component {
 
     <!-- FILTER DRAWER -->
     <x-drawer wire:model="drawer" title="Filters" right separator with-close-button class="lg:w-1/3">
-        <x-input placeholder="Search..." wire:model.live.debounce="search" icon="o-magnifying-glass" @keydown.enter="$wire.drawer = false" />
+
+        <div class="grid gap-5">
+            <x-input placeholder="Search..." wire:model.live.debounce="search" icon="o-magnifying-glass" @keydown.enter="$wire.drawer = false" />
+            <x-select placeholder="Country" wire:model.live="country_id" icon="o-flag" :options="$countries" placeholder-value="0" />
+        </div>
 
         <x-slot:actions>
             <x-button label="Reset" icon="o-x-mark" wire:click="clear" spinner />
