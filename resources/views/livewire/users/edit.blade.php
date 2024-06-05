@@ -59,7 +59,7 @@ new class extends Component {
 
     <x-form wire:submit="save">
 
-        <x-file label="Avatar" wire:model="avatar" accept="image/png, image/jpeg">
+        <x-file label="Avatar" wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
             <img src="{{ $user->avatar ?? '/empty-user.jpg' }}" class="h-40 rounded-lg" />
         </x-file>
 
