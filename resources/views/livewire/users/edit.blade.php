@@ -2,6 +2,7 @@
 
 use App\Models\Country;
 use App\Models\User;
+use Livewire\WithFileUploads;
 use Livewire\Attributes\Rule;
 use Livewire\Volt\Component;
 use Mary\Traits\Toast;
@@ -9,6 +10,7 @@ use Mary\Traits\Toast;
 new class extends Component {
 
     use Toast;
+    use WithFileUploads;
 
     public User $user;
 
@@ -20,6 +22,9 @@ new class extends Component {
 
     #[Rule('sometimes')]
     public ?int $country_id = null;
+
+    #[Rule('nullable|image|max:1024')]
+    public $avatar;
 
     public function with(): array
     {
@@ -39,6 +44,11 @@ new class extends Component {
 
         $this->user->update($data);
 
+        if ($this->avatar) {
+            $url = $this->avatar->store('users', 'public');
+            $this->user->update(['avatar' => "/storage/$url"]);
+        }
+
         $this->success('User details updated.', redirectTo: route('users.index'));
     }
 
@@ -48,8 +58,15 @@ new class extends Component {
     <x-header title="Update {{ $user->name }}" separator />
 
     <x-form wire:submit="save">
+
+        <x-file label="Avatar" wire:model="avatar" accept="image/png, image/jpeg">
+            <img src="{{ $user->avatar ?? '/empty-user.jpg' }}" class="h-40 rounded-lg" />
+        </x-file>
+
         <x-input label="Name" wire:model="name" />
+
         <x-input label="Email" wire:model="email" />
+
         <x-select label="Country" wire:model="country_id" :options="$countries" placeholder="---" />
 
         <x-slot:actions>
