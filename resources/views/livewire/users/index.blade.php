@@ -90,6 +90,7 @@ new class extends Component {
         </x-slot:middle>
         <x-slot:actions>
             <x-button label="Filters" @click="$wire.drawer = true" responsive icon="o-funnel" />
+            <x-button label="Create" :link="route('users.create')" responsive icon="o-plus" class="btn-primary" />
         </x-slot:actions>
     </x-header>
 
