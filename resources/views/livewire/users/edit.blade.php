@@ -59,15 +59,20 @@ new class extends Component {
 
     <x-form wire:submit="save">
 
-        <x-file label="Avatar" wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
-            <img src="{{ $user->avatar ?? '/empty-user.jpg' }}" class="h-40 rounded-lg" />
-        </x-file>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-4">
+                <x-input label="Name" wire:model="name" />
 
-        <x-input label="Name" wire:model="name" />
+                <x-input label="Email" wire:model="email" />
 
-        <x-input label="Email" wire:model="email" />
-
-        <x-select label="Country" wire:model="country_id" :options="$countries" placeholder="---" />
+                <x-select label="Country" wire:model="country_id" :options="$countries" placeholder="---" />
+            </div>
+            <div>
+                <x-file label="Avatar" wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
+                    <img src="{{ $user->avatar ?? '/empty-user.jpg' }}" class="h-40 rounded-lg" />
+                </x-file>
+            </div>
+        </div>
 
         <x-slot:actions>
             <x-button label="Cancel" link="{{ route('users.index') }}" />
