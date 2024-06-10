@@ -67,5 +67,8 @@
 
     {{--  TOAST area --}}
     <x-toast />
+
+    {{-- Spotlight --}}
+    <x-spotlight />
 </body>
 </html>
