@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Country;
+use App\Models\Language;
 use App\Models\User;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Rule;
@@ -23,6 +24,9 @@ new class extends Component {
     #[Rule('sometimes')]
     public ?int $country_id = null;
 
+    #[Rule('required')]
+    public array $selectedLanguages = [];
+
     #[Rule('nullable|image|max:1024')]
     public $avatar;
 
@@ -30,12 +34,15 @@ new class extends Component {
     {
         return [
             'countries' => Country::all(),
+            'languages' => Language::all(),
         ];
     }
 
     public function mount(): void
     {
         $this->fill($this->user);
+
+        $this->selectedLanguages = $this->user->languages->pluck('id')->all();
     }
 
     public function save(): void
@@ -43,6 +50,8 @@ new class extends Component {
         $data = $this->validate();
 
         $this->user->update($data);
+
+        $this->user->languages()->sync($this->selectedLanguages);
 
         if ($this->avatar) {
             $url = $this->avatar->store('users', 'public');
@@ -71,6 +80,8 @@ new class extends Component {
                 <x-file label="Avatar" wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
                     <img src="{{ $user->avatar ?? '/empty-user.jpg' }}" class="h-40 rounded-lg" />
                 </x-file>
+
+                <x-choices-offline label="Languages" wire:model="selectedLanguages" :options="$languages" searchable />
             </div>
         </div>
 
